@@ -909,12 +909,14 @@
      &                             MAX(Cx,0.0_r8)*grad(i-1,Jstr-1)-     &
      &                             MIN(Cx,0.0_r8)*grad(i  ,Jstr-1))/    &
      &                            (cff+Ce)
-
+!Turn off nudging on Ross Southern edge
+#ifndef ROSS
               IF (LBC(isouth,isUbar,ng)%nudging) THEN
                 ubar(i,Jstr-1,kout)=ubar(i,Jstr-1,kout)+                &
      &                              tau*(BOUNDARY(ng)%ubar_south(i)-    &
      &                                   ubar(i,Jstr-1,know))
               END IF
+#endif
 #ifdef MASKING
               ubar(i,Jstr-1,kout)=ubar(i,Jstr-1,kout)*                  &
      &                            GRID(ng)%umask(i,Jstr-1)
@@ -1069,11 +1071,13 @@
      &                             MIN(Cx,0.0_r8)*grad(i  ,Jend+1))/    &
      &                            (cff+Ce)
 
+#ifndef ROSS
               IF (LBC(inorth,isUbar,ng)%nudging) THEN
                 ubar(i,Jend+1,kout)=ubar(i,Jend+1,kout)+                &
      &                              tau*(BOUNDARY(ng)%ubar_north(i)-    &
      &                                   ubar(i,Jend+1,know))
               END IF
+#endif
 #ifdef MASKING
               ubar(i,Jend+1,kout)=ubar(i,Jend+1,kout)*                  &
      &                            GRID(ng)%umask(i,Jend+1)
