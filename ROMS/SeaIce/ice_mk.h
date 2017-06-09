@@ -458,6 +458,9 @@
       real(r8) :: d1
       real(r8) :: d2i
       real(r8) :: d3
+# ifdef ROSS
+      real(r8) :: h0
+# endif
 
       real(r8) :: fac_shflx
 
@@ -531,8 +534,10 @@
 !      alph - thermal conductivity of ice
           alph(i,j) = alphic*(1._r8-1.2_r8*brnfr(i,j))
 #ifndef ICE_BOX
+# ifndef ROSS
           corfac = 1._r8/(0.5_r8*(1._r8+EXP(-(hi(i,j,linew)/1._r8)**2)))
           alph(i,j) = alph(i,j)*corfac
+# endif
 #endif
           coa(i,j) = 2.0_r8*alph(i,j)*snow_thick(i,j)/                  &
      &                   (alphsn*ice_thick(i,j))
@@ -738,7 +743,7 @@
 #ifdef MELT_PONDS
 !
 !  Update melt ponds
-!  This all comes from CICE's cesm pond scheme.
+!  This all comes from CICEs cesm pond scheme.
 !
           IF (ai(i,j,linew) > min_a(ng)) THEN
             vpond = apond(i,j,linew)*hpond(i,j,linew)*ai(i,j,linew)
@@ -915,6 +920,13 @@
             stflx(i,j,isalt) = stflx(i,j,isalt)*rmask_wet(i,j)
             io_mflux(i,j) = io_mflux(i,j)*rmask_wet(i,j)
 #endif
+#ifdef ROSS
+            stflx(i,j,inert(2)) = 100.0_r8*ai(i,j,linew)*               &
+     &                            MAX(0.0,(wai(i,j)-wio(i,j)))
+# ifdef MASKING
+            stflx(i,j,inert(2)) = stflx(i,j,inert(2))*rmask(i,j)
+# endif
+#endif
 #ifdef ICE_DIAGS
             saltflux_ice(i,j) = (xtot-ai(i,j,linew)*wro(i,j))*        &
      &                   (salt_top(i,j)-sice(i,j))
@@ -933,15 +945,30 @@
         DO i = Istr,Iend
           phi = 4._r8
           if (wao(i,j) .lt. 0.0_r8 ) phi = 0.5_r8
+# ifdef ROSS
+     hi(i,j,linew) = h(i,j,linew)+dtice(ng)*(rhosw/rhoice(ng))          &
+     &               *(ai(i,j,linew)                                    &
+     &               *(wio(i,j)-wai(i,j))                               &
+     &               +(1.0_r8-ai(i,j,linew))*wao(i,j) + wfr(i,j))
+# else
           hi(i,j,linew) = hi(i,j,linew)+dtice(ng)                       &
      &             *(ai(i,j,linew)                                      &
      &             *(wio(i,j)-wai(i,j))                                 &
      &        +(1.0_r8-ai(i,j,linew))*wao(i,j) + wfr(i,j))
-
+# endif
           ai_tmp = ai(i,j,linew)
+# ifdef ROSS
+	  h0 = MAX(.20,ice_thick(i,j)/phi)
+!         ice_thick(i,j) = MAX(.30_r8,ice_thick(i,j))
+	  ai(i,j,linew) = ai(i,j,linew) +                               &
+     &                    dtice(ng)*(1.0_r8-ai(i,j,linew))              &
+     &                    *(rhosw/rhoice(ng))                           &
+     &                    *(wao(i,j)+wfr(i,j))/h0
+# else
           ai(i,j,linew) = ai(i,j,linew) +                               &
      &             dtice(ng)*(1.0_r8-ai(i,j,linew))                     &
      &                      *(phi*wao(i,j)+wfr(i,j))
+# endif
           ai(i,j,linew) = min(ai(i,j,linew),max_a(ng))
 
 #ifndef NO_SNOW

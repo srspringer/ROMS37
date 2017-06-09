@@ -792,6 +792,16 @@
             ELSE
               stflx(i,j,isalt)=0.0_r8
             END IF
+
+!Dye_03 glacial melt tracer for ROSS
+#    ifdef ROSS
+            IF (melt_rate .gt. 0.0_r8) THEN
+               stflx(i,j,inert(3))=10000.0_r8*melt_rate
+            ELSE
+               stflx(i,j,inert(3))=0.0_r8
+            END IF
+#    endif
+
 !
 !   Diagnostic print checks
 !
@@ -826,6 +836,11 @@
       CALL bc_r2d_tile (ng, tile,                                       &
      &                  LBi, UBi, LBj, UBj,                             &
      &                  stflx(:,:,isalt))
+#    ifdef ROSS
+      CALL bc_r2d_tile (ng, tile,                                       &
+     &                  LBi, UBi, LBj, UBj,                             &
+     &                  stflx(:,:,inert(3)))
+#    endif
 #    ifdef DISTRIBUTE
       CALL mp_exchange2d (ng, tile, iNLM, 1,                            &
      &                    LBi, UBi, LBj, UBj,                           &
@@ -837,6 +852,13 @@
      &                    NghostPoints,                                 &
      &                    EWperiodic(ng), NSperiodic(ng),               &
      &                    stflx(:,:,isalt))
+#    ifdef ROSS
+      CALL mp_exchanged2d (ng, tile, iNLM, 1                            &
+     &                     LBi, UBi, LBj, UBj,                          &
+     &                     NghostPoints,                                &
+     &                     EWperiodic(ng), NSperiodic(ng),              &
+     &                     stflx(:,:,inert(3)))
+#    endif
 #    endif
 #   elif defined ISOMIP
       DO j=JstrR,JendR

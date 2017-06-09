@@ -461,7 +461,7 @@
 !
 !  Define tracer diagnostic fields.
 !
-#  ifdef SOGLOBEC
+#  if defined SOGLOBEC || defined ROSS
         DO itrc=1,3,2                    ! Temperature and CDW
 #  else
         DO itrc=1,NT(ng)
@@ -617,7 +617,7 @@
 #  endif
 # endif
 # ifdef DIAGNOSTICS_TS
-#  ifdef SOGLOBEC
+#  if defined SOGLOBEC || defined ROSS
           DO itrc=1,3,2                     ! Temperature and CDW
 #  else
           DO itrc=1,NT(ng)
@@ -694,7 +694,7 @@
 #  endif
 # endif
 # ifdef DIAGNOSTICS_TS
-#  ifdef SOGLOBEC
+#  if defined SOGLOBEC || defined ROSS
         DO itrc=1,3,2                     ! Temperature and CDW
 #  else
         DO itrc=1,NT(ng)

@@ -144,7 +144,10 @@
 #ifdef MASKING
             cff=cff*umask(Istr,j)
 #endif
+!Reason for ifndef ROSS is unknown (investigate later) - from Dinniman
+#ifndef ROSS 
             my_area=my_area+cff
+#endif
             my_flux=my_flux+cff*ubar(Istr,j,kinp)
           END DO
         END IF
@@ -158,7 +161,9 @@
 #ifdef MASKING
             cff=cff*umask(Iend+1,j)
 #endif
+#ifndef ROSS
             my_area=my_area+cff
+#endif
             my_flux=my_flux-cff*ubar(Iend+1,j,kinp)
           END DO
         END IF
@@ -315,6 +320,8 @@
 # define J_RANGE MAX(2,JstrV-1),MIN(Jend+1,Mm(ng))
 #endif
 
+!Another relic from Dinniman to investigate
+#ifndef ROSS
       IF (VolCons(iwest,ng)) THEN
         IF (DOMAIN(ng)%Western_Edge(tile)) THEN
           DO j=-2+J_RANGE+1
@@ -327,7 +334,8 @@
           END DO
         END IF
       END IF
-
+#endif
+#ifndef ROSS
       IF (VolCons(ieast,ng)) THEN
         IF (DOMAIN(ng)%Eastern_Edge(tile)) THEN
           DO j=-2+J_RANGE+1
@@ -340,7 +348,7 @@
           END DO
         END IF
       END IF
-
+#endif
       IF (VolCons(isouth,ng)) THEN
         IF (DOMAIN(ng)%Southern_Edge(tile)) THEN
           DO i=-2+I_RANGE+1

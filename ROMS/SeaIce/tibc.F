@@ -157,7 +157,7 @@
             enthalpi(0,j,linew)=enthalpi(0,j,linew)*                    &
      &                   GRID(ng)%rmask_wet(0,j)
 # endif
-# ifdef SOGLOBEC
+# if defined SOGLOBEC || defined ROSS
             ti(0,j,linew) = enthalpi(0,j,linew)/                        &
      &                       MAX(hi(1,j,linew),1.0E-6_r8)
 # else
@@ -265,7 +265,7 @@
             enthalpi(Lm(ng)+1,j,linew)=enthalpi(Lm(ng)+1,j,linew)*      &
      &                          GRID(ng)%rmask_wet(Lm(ng)+1,j)
 # endif
-# ifdef SOGLOBEC
+# if defined SOGLOBEC || defined ROSS
             ti(Lm(ng)+1,j,linew) = enthalpi(Lm(ng)+1,j,linew)/          &
      &                       MAX(hi(Lm(ng),j,linew),1.0E-6_r8)
 # else
@@ -372,7 +372,7 @@
             enthalpi(i,0,linew)=enthalpi(i,0,linew)*                    &
      &                   GRID(ng)%rmask_wet(i,0)
 # endif
-# ifdef SOGLOBEC
+# if defined SOGLOBEC || defined ROSS
             ti(i,0,linew) = enthalpi(i,0,linew)/                        &
      &                       MAX(hi(i,1,linew),1.0E-6_r8)
 # else
@@ -479,7 +479,7 @@
             enthalpi(i,Mm(ng)+1,linew)=enthalpi(i,Mm(ng)+1,linew)*      &
      &                          GRID(ng)%rmask_wet(i,Mm(ng)+1)
 # endif
-# ifdef SOGLOBEC
+# if defined SOGLOBEC || defined ROSS
             ti(i,Mm(ng)+1,linew) = enthalpi(i,Mm(ng)+1,linew)/          &
      &                       MAX(hi(i,Mm(ng),linew),1.0E-6_r8)
 # else
