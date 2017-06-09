@@ -371,6 +371,23 @@
       real(r8) :: fac
 # endif
 !
+!# ifdef ROSS
+!
+! Define glacial dFE solubility in dye units = (dFe_soly / end member
+!  concentration) * end member dye value = (0.6 nM/ 29 nM) * 10000.0
+!  (see set_vbc.F and Johnson et al., 1997)
+!
+! Trying new values of solubility (0.4 nM, see Fig. 3b, Taglaibue et
+!  al., 2012) and time constant (0.03/yr, residence time of Th...see
+!  note from Pete Sedwick) - msd/slm (6/18/14)
+!
+!    real(r8), parameter :: Glac_Fe_Soly = 206.90_r8
+!    real(r8), parameter :: Glac_Fe_Soly = 137.93_r8
+!    real(r8), parameter :: kFe = 1.585E-10_r8  ! 0.005/yr in 1/s
+!    real(r8), parameter :: kFe = 9.513E-10_r8  ! 0.03/yr in 1/s
+!
+!endif
+!
 # include "set_bounds.h"
 
 # ifdef NESTING
@@ -1469,11 +1486,20 @@
           DO k=1,N(ng)
             DO j=JstrR,JendR
               DO i=IstrR,IendR
+# ifdef ROSS /* Added SM 2015-08-21 - modified again 2015-08-25 */
+!Restore benthic tracer to climatology values in bottom layer
+                 IF (itrc.eq.inert(4) .and. k.eq.1) THEN
+                    IF (tclm(i,j,k,itrc.gt.0.01) THEN
+                       t(i,j,k,nnew,itrc)=tclm(i,j,k,itrc)
+                    END IF
+                 END IF
+# else
                 t(i,j,k,nnew,itrc)=t(i,j,k,nnew,itrc)+                  &
      &                             dt(ng)*                              &
      &                             CLIMA(ng)%Tnudgcof(i,j,k,ic)*        &
      &                             (CLIMA(ng)%tclm(i,j,k,ic)-           &
      &                              t(i,j,k,nnew,itrc))
+# endif
               END DO
             END DO
           END DO
@@ -1496,7 +1522,7 @@
 !
 !  Apply clamp to salt
 !
-#  ifdef SOGLOBEC
+#  if defined SOGLOBEC || defined ROSS
       IF (itrc .ge. isalt) THEN
 #  else
       IF (itrc == isalt) THEN
@@ -1510,6 +1536,25 @@
         END DO
       END IF
 # endif
+!# ifdef ROSS
+!
+!  Apply scavenging term (as defined in Eq. 5 of Johnson et al., 1997) to
+!  dye_03 (glacial melt dye)
+!
+!     IF (itrc == inert(3)) THEN
+!       DO k=1,N(ng)
+!         DO j=JstrR,JendR
+!           DO i=IstrR,IendR
+!             IF (t(i,j,k,nnew,itrc) .gt. Glac_Fe_Soly) THEN
+!               t(i,j,k,nnew,itrc)=t(i,j,k,nnew,itrc)+                 &
+!     &                            dt(ng)*kFe*                         &
+!     &                            (Glac_Fe_Soly-t(i,j,k,nnew,itrc))
+!             END IF
+!           END DO
+!         END DO
+!       END DO
+!     END IF
+!# endif
 # ifdef DIAGNOSTICS_TS
 !
 !  Compute time-rate-of-change diagnostic term.
