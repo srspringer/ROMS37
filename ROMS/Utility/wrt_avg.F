@@ -3093,7 +3093,7 @@
         scale=1.0_r8
 #   endif
 #  else
-#   ifdef SOGLOBEC
+#   if defined SOGLOBEC || defined ROSS
         scale=1.0_r8
 #   else
         scale=rho0*Cp
@@ -3273,7 +3273,7 @@
 !  Write out shortwave radiation flux.
 !
       IF (Aout(idSrad,ng)) THEN
-#    if defined ADJOINT || defined SOGLOBEC
+#    if defined ADJOINT || defined SOGLOBEC || defined ROSS
         scale=1.0_r8
 #    else
         scale=rho0*Cp
