@@ -7,3 +7,7 @@ Makefile.*
 clean_ice_*
 comp_ice_*
 #*#
+*.qsub
+*.out
+ROMS_PIGgrd*.e*
+ROMS_PIGgrd*.o*
