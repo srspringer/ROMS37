@@ -1,6 +1,6 @@
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# Copyright (c) 2002-2017 The ROMS/TOMS Group                           :::
+# Copyright (c) 2002-2016 The ROMS/TOMS Group                           :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -51,13 +51,13 @@
 #
 
 ifdef USE_NETCDF4
-        NF_CONFIG ?= nf-config
-    NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include
-             LIBS := $(shell $(NF_CONFIG) --flibs)
+        NC_CONFIG ?= nc-config
+    NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
+             LIBS := $(shell $(NC_CONFIG) --flibs) #-lhdf5
 else
     NETCDF_INCDIR ?= /usr/local/include
     NETCDF_LIBDIR ?= /usr/local/lib
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
+             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf #-lhdf5
 endif
 
 ifdef USE_ARPACK
@@ -80,19 +80,19 @@ endif
 
 ifdef USE_OpenMP
          CPPFLAGS += -D_OPENMP
-           FFLAGS += -openmp
+           FFLAGS += -qopenmp
 endif
 
 ifdef USE_DEBUG
 #          FFLAGS += -g -check bounds -traceback
 #          FFLAGS += -g -check bounds -traceback -check uninit -warn interfaces,nouncalled -gen-interfaces
-           FFLAGS += -g -check uninit -ftrapuv -traceback -check bounds -fpe0
+           FFLAGS += -g -check uninit -ftrapuv -traceback -check bounds
            CFLAGS += -g
          CXXFLAGS += -g
 else
-           FFLAGS += -ip -O3
-           CFLAGS += -O3
-         CXXFLAGS += -O3
+           FFLAGS += -ip -O2
+           CFLAGS += -O2
+         CXXFLAGS += -O2
 endif
 
 ifdef USE_MCT
