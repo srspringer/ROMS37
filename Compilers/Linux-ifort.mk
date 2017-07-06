@@ -53,11 +53,11 @@
 ifdef USE_NETCDF4
         NC_CONFIG ?= nc-config
     NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
-             LIBS := $(shell $(NC_CONFIG) --flibs) #-lhdf5
+             LIBS := $(shell $(NC_CONFIG) --flibs) -lhdf5
 else
     NETCDF_INCDIR ?= /usr/local/include
     NETCDF_LIBDIR ?= /usr/local/lib
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf #-lhdf5
+             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf -lhdf5
 endif
 
 ifdef USE_ARPACK
