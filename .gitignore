@@ -2,7 +2,7 @@
 Build*
 Ocean?
 .*.swp
-makefile.*
+makefile*
 Makefile.*
 clean_ice_*
 comp_ice_*
