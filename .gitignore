@@ -1,6 +1,6 @@
 .svn
 Build*
-Ocean?
+ocean?
 .*.swp
 makefile*
 Makefile.*
@@ -11,3 +11,4 @@ comp_ice_*
 *.out
 ROMS_PIGgrd*.e*
 ROMS_PIGgrd*.o*
+*.nc

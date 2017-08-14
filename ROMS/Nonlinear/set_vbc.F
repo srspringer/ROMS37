@@ -45,7 +45,7 @@
 #  include "tile.h"
 !
 #  ifdef PROFILE
-      CALL wclock_on (ng, iNLM, 6)
+      CALL wclock_on (ng, iNLM, 6, __LINE__, __FILE__)
 #  endif
       CALL set_vbc_tile (ng, tile,                                      &
      &                   LBi, UBi, LBj, UBj,                            &
@@ -124,7 +124,7 @@
      &                   FORCES(ng) % stflx,                            &
      &                   FORCES(ng) % btflx)
 #  ifdef PROFILE
-      CALL wclock_off (ng, iNLM, 6)
+      CALL wclock_off (ng, iNLM, 6, __LINE__, __FILE__)
 #  endif
 
       RETURN
@@ -1082,7 +1082,7 @@
 #  include "tile.h"
 !
 #  ifdef PROFILE
-      CALL wclock_on (ng, iNLM, 6)
+      CALL wclock_on (ng, iNLM, 6, __LINE__, __FILE__)
 #  endif
       CALL set_vbc_tile (ng, tile,                                      &
      &                   LBi, UBi, LBj, UBj,                            &
@@ -1098,7 +1098,7 @@
      &                   FORCES(ng) % bustr,                            &
      &                   FORCES(ng) % bvstr)
 #  ifdef PROFILE
-      CALL wclock_off (ng, iNLM, 6)
+      CALL wclock_off (ng, iNLM, 6, __LINE__, __FILE__)
 #  endif
 
       RETURN
