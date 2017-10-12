@@ -12,3 +12,5 @@ comp_ice_*
 ROMS_PIGgrd*.e*
 ROMS_PIGgrd*.o*
 *.nc
+*~
+*.in
