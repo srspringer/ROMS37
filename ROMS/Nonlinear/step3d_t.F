@@ -1449,8 +1449,9 @@
 !  to tracer data and apply Land/Sea mask.
 !-----------------------------------------------------------------------
 !
-      ic=0
 #ifdef OFFLINE_BIOLOGY
+      ! Skip over T and S for nudging OFFLINE
+      ic=2
       DO ibt=1,NBT
         itrc=idbio(ibt)
 #else
@@ -1459,6 +1460,7 @@
 !  reduce memory.
 !
 !
+      ic=0
       DO itrc=1,NT(ng)
 #endif
 !
