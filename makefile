@@ -1,6 +1,6 @@
 # svn $Id$
 #::::::::::::::::::::::::::::::::::::::::::::::::::::: Hernan G. Arango :::
-# Copyright (c) 2002-2017 The ROMS/TOMS Group             Kate Hedstrom :::
+# Copyright (c) 2002-2016 The ROMS/TOMS Group             Kate Hedstrom :::
 #   Licensed under a MIT/X style license                                :::
 #   See License_ROMS.txt                                                :::
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -60,12 +60,12 @@ endif
 #  the .h extension. For example, the upwelling application includes the
 #  "upwelling.h" header file.
 
-ROMS_APPLICATION ?= UPWELLING
+ROMS_APPLICATION ?= PIG
 
 #  If application header files is not located in "ROMS/Include",
 #  provide an alternate directory FULL PATH.
 
-MY_HEADER_DIR ?=
+MY_HEADER_DIR ?= /u/slmack/ROMS37/Apps/PIG
 
 #  If your application requires analytical expressions and they are
 #  not located in "ROMS/Functionals", provide an alternate directory.
@@ -75,7 +75,7 @@ MY_HEADER_DIR ?=
 #  If applicable, also used this directory to place your customized
 #  biology model header file (like fennel.h, nemuro.h, ecosim.h, etc).
 
-MY_ANALYTICAL_DIR ?=
+MY_ANALYTICAL_DIR ?= /u/slmack/ROMS37/Apps/PIG
 
 # If applicable, where does CICE put its binary files?
 
@@ -90,17 +90,17 @@ MY_CICE_DIR ?= /center/w/kate/CICE/NEP/compile
 #    MY_CPP_FLAGS ?= -DAVERAGES
 #
 
-MY_CPP_FLAGS ?=
+MY_CPP_FLAGS ?= -O0
 
 #  Activate debugging compiler options:
 
-   USE_DEBUG ?=
+   USE_DEBUG ?= 
 
 #  If parallel applications, use at most one of these definitions
 #  (leave both definitions blank in serial applications):
 
-     USE_MPI ?=
-  USE_OpenMP ?=
+     USE_MPI ?= on
+  USE_OpenMP ?= 
 
 #  If distributed-memory, turn on compilation via the script "mpif90".
 #  This is needed in some Linux operating systems. In some systems with
@@ -110,7 +110,7 @@ MY_CPP_FLAGS ?=
 #  In this, case the user need to select the desired compiler below and
 #  turn on both USE_MPI and USE_MPIF90 macros.
 
-  USE_MPIF90 ?=
+  USE_MPIF90 ?= on
 
 #  If applicable, activate 64-bit compilation:
 
@@ -120,6 +120,10 @@ MY_CPP_FLAGS ?=
 #  library needs both the HDF5 and MPI libraries.
 
  USE_NETCDF4 ?= on
+
+# For running on Pleiades, specify which node types to compile for
+ USE_BRIDGE ?= on
+ USE_WELL   ?=
 
 #--------------------------------------------------------------------------
 #  We are going to include a file with all the settings that depend on
@@ -144,7 +148,7 @@ MY_CPP_FLAGS ?=
 #  NetCDF and so on.
 #--------------------------------------------------------------------------
 
-        FORT ?= gfortran
+        FORT ?= ifort
 
 #--------------------------------------------------------------------------
 #  Set directory for executable.
@@ -524,6 +528,15 @@ $(SCRATCH_DIR):
 # FFLAGS += -Mprof=mpi,lines              # pgi
 # FFLAGS += -Mprof=mpi,hwcts              # pgi
 # FFLAGS += -Mprof=func                   # pgi
+  FFLAGS += -mcmodel=medium -shared-intel
+
+ifdef USE_BRIDGE
+  FFLAGS += -xAVX
+endif
+
+ifdef USE_WELL
+  FFLAGS += -xCORE-xAVX2
+endif
 
 #--------------------------------------------------------------------------
 #  Special CPP macros for mod_strings.F
