@@ -946,7 +946,7 @@
           phi = 4._r8
           if (wao(i,j) .lt. 0.0_r8 ) phi = 0.5_r8
 # ifdef ROSS
-     hi(i,j,linew) = h(i,j,linew)+dtice(ng)*(rhosw/rhoice(ng))          &
+     hi(i,j,linew) = hi(i,j,linew)+dtice(ng)*(rhosw/rhoice(ng))          &
      &               *(ai(i,j,linew)                                    &
      &               *(wio(i,j)-wai(i,j))                               &
      &               +(1.0_r8-ai(i,j,linew))*wao(i,j) + wfr(i,j))
