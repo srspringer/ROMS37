@@ -100,9 +100,9 @@
 #   ifdef SHORTWAVE
      &                   FORCES(ng) % srflx,                            &
 #   endif
-#   ifdef ICESHELF_3EQ
-     &                   FORCES(ng) % Tair,                             &
-#   endif
+!#   ifdef ICESHELF_3EQ
+!     &                   FORCES(ng) % Tair,                             &
+!#   endif
      &                   FORCES(ng) % sustr,                            &
      &                   FORCES(ng) % svstr,                            &
 #  endif
@@ -181,9 +181,9 @@
 #   ifdef SHORTWAVE
      &                         srflx,                                   &
 #   endif
-#   ifdef ICESHELF_3EQ
-     &                         Tair,                                    &
-#   endif
+!#   ifdef ICESHELF_3EQ
+!     &                         Tair,                                    &
+!#   endif
      &                         sustr, svstr,                            &
 #  endif
 #  ifndef BBL_MODEL
@@ -271,9 +271,9 @@
 #    ifdef SHORTWAVE
       real(r8), intent(inout) :: srflx(LBi:,LBj:)
 #    endif
-#    ifdef ICESHELF_3EQ
-      real(r8), intent(in)    :: Tair(LBi:,LBj:)
-#    endif
+!#    ifdef ICESHELF_3EQ
+!      real(r8), intent(in)    :: Tair(LBi:,LBj:)
+!#    endif
       real(r8), intent(inout) :: sustr(LBi:,LBj:)
       real(r8), intent(inout) :: svstr(LBi:,LBj:)
 #   endif
@@ -343,9 +343,9 @@
 #    ifdef SHORTWAVE
       real(r8), intent(inout) :: srflx(LBi:UBi,LBj:UBj)
 #    endif
-#    ifdef ICESHELF_3EQ
-      real(r8), intent(in)    :: Tair(LBi:UBi,LBj:UBj)
-#    endif
+!#    ifdef ICESHELF_3EQ
+!      real(r8), intent(in)    :: Tair(LBi:UBi,LBj:UBj)
+!#    endif
       real(r8), intent(inout) :: sustr(LBi:UBi,LBj:UBj)
       real(r8), intent(inout) :: svstr(LBi:UBi,LBj:UBj)
 #   endif
@@ -713,11 +713,11 @@
 !  First, calculate the salinity in the boundary layer from solving the
 !   3 equations simultaneously
 !
-            IF (Tair(i,j) .lt. -1.95_r8) THEN
-              Hlice = Hlfreeze - blk_Cpi*(Tair(i,j)+1.95_r8)
-            ELSE
+!            IF (Tair(i,j) .lt. -1.95_r8) THEN
+!              Hlice = Hlfreeze - blk_Cpi*(Tair(i,j)+1.95_r8)
+!            ELSE
               Hlice = Hlfreeze
-            END IF
+!            END IF
 
 !  Compute friction velocity from surface stresses
 
@@ -972,7 +972,9 @@
      &                  v(i-1,j  ,1,nrhs)+                              &
      &                  v(i-1,j+1,1,nrhs))
           cff2=SQRT(u(i,j,1,nrhs)*u(i,j,1,nrhs)+cff1*cff1)
-          bustr(i,j)=0.5_r8*(rdrag2(i-1,j)+rdrag2(i,j))*                &
+!          bustr(i,j)=0.5_r8*(rdrag2(i-1,j)+rdrag2(i,j))*                &
+!     &               u(i,j,1,nrhs)*cff2
+          bustr(i,j)=2.5e-3_r8*                                         &
      &               u(i,j,1,nrhs)*cff2
 #    ifdef LIMIT_BSTRESS
           cff3=cff*0.5_r8*(Hz(i-1,j,1)+Hz(i,j,1))
@@ -989,8 +991,10 @@
      &                  u(i  ,j-1,1,nrhs)+                              &
      &                  u(i+1,j-1,1,nrhs))
           cff2=SQRT(cff1*cff1+v(i,j,1,nrhs)*v(i,j,1,nrhs))
-          bvstr(i,j)=0.5_r8*(rdrag2(i,j-1)+rdrag2(i,j))*                &
+          bvstr(i,j)=2.5e-3_r8*                                         &
      &               v(i,j,1,nrhs)*cff2
+!          bvstr(i,j)=0.5_r8*(rdrag2(i,j-1)+rdrag2(i,j))*                &
+!     &               v(i,j,1,nrhs)*cff2
 #    ifdef LIMIT_BSTRESS
           cff3=cff*0.5_r8*(Hz(i,j-1,1)+Hz(i,j,1))
           bvstr(i,j)=SIGN(1.0_r8, bvstr(i,j))*                          &
@@ -1195,8 +1199,10 @@
      &                  vbar(i-1,j  ,krhs)+                             &
      &                  vbar(i-1,j+1,krhs))
           cff2=SQRT(ubar(i,j,krhs)*ubar(i,j,krhs)+cff1*cff1)
-          bustr(i,j)=0.5_r8*(rdrag2(i-1,j)+rdrag2(i,j))*                &
+          bustr(i,j)=2.5e-3_r8*                                         &
      &               ubar(i,j,krhs)*cff2
+!          bustr(i,j)=0.5_r8*(rdrag2(i-1,j)+rdrag2(i,j))*                &
+!     &               ubar(i,j,krhs)*cff2
         END DO
       END DO
       DO j=JstrV,Jend
@@ -1206,8 +1212,10 @@
      &                  ubar(i  ,j-1,krhs)+                             &
      &                  ubar(i+1,j-1,krhs))
           cff2=SQRT(cff1*cff1+vbar(i,j,krhs)*vbar(i,j,krhs))
-          bvstr(i,j)=0.5_r8*(rdrag2(i,j-1)+rdrag2(i,j))*                &
+          bvstr(i,j)=2.5e-3_r8*                                         &
      &               vbar(i,j,krhs)*cff2
+!          bvstr(i,j)=0.5_r8*(rdrag2(i,j-1)+rdrag2(i,j))*                &
+!     &               vbar(i,j,krhs)*cff2
         END DO
       END DO
 #  endif

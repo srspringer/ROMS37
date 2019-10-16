@@ -157,7 +157,7 @@
         IF (exit_flag.eq.NoError) THEN
           IF (LEN_TRIM(Vinfo(1)).gt.0) THEN
             IF ((nVdim.gt.1).and.(Vdim(1).ne.0)) THEN
-              status=nf90_def_var_deflate (ncid, Vid, shuffle, deflate, &
+              status=nf90_def_var_deflate(ncid, Vid, shuffle, deflate,  &
      &                                     deflate_level)
               IF (FoundError(status, nf90_noerr, __LINE__,              &
      &                       __FILE__)) THEN

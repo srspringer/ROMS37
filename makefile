@@ -65,7 +65,7 @@ ROMS_APPLICATION ?= PIG
 #  If application header files is not located in "ROMS/Include",
 #  provide an alternate directory FULL PATH.
 
-MY_HEADER_DIR ?= /u/slmack/ROMS37/Apps/PIG
+MY_HEADER_DIR ?=
 
 #  If your application requires analytical expressions and they are
 #  not located in "ROMS/Functionals", provide an alternate directory.
@@ -75,7 +75,7 @@ MY_HEADER_DIR ?= /u/slmack/ROMS37/Apps/PIG
 #  If applicable, also used this directory to place your customized
 #  biology model header file (like fennel.h, nemuro.h, ecosim.h, etc).
 
-MY_ANALYTICAL_DIR ?= /u/slmack/ROMS37/Apps/PIG
+MY_ANALYTICAL_DIR ?=
 
 # If applicable, where does CICE put its binary files?
 
@@ -90,17 +90,17 @@ MY_CICE_DIR ?= /center/w/kate/CICE/NEP/compile
 #    MY_CPP_FLAGS ?= -DAVERAGES
 #
 
-MY_CPP_FLAGS ?= -O0
+MY_CPP_FLAGS ?=
 
 #  Activate debugging compiler options:
 
-   USE_DEBUG ?= 
+   USE_DEBUG ?=
 
 #  If parallel applications, use at most one of these definitions
 #  (leave both definitions blank in serial applications):
 
-     USE_MPI ?= on
-  USE_OpenMP ?= 
+     USE_MPI ?=
+  USE_OpenMP ?=
 
 #  If distributed-memory, turn on compilation via the script "mpif90".
 #  This is needed in some Linux operating systems. In some systems with
@@ -110,20 +110,16 @@ MY_CPP_FLAGS ?= -O0
 #  In this, case the user need to select the desired compiler below and
 #  turn on both USE_MPI and USE_MPIF90 macros.
 
-  USE_MPIF90 ?= on
+  USE_MPIF90 ?=
 
 #  If applicable, activate 64-bit compilation:
 
-   USE_LARGE ?=
+   USE_LARGE ?= on
 
 #  If applicable, link with NetCDF-4 library. Notice that the NetCDF-4
 #  library needs both the HDF5 and MPI libraries.
 
  USE_NETCDF4 ?= on
-
-# For running on Pleiades, specify which node types to compile for
- USE_BRIDGE ?= on
- USE_WELL   ?=
 
 #--------------------------------------------------------------------------
 #  We are going to include a file with all the settings that depend on
@@ -148,7 +144,7 @@ MY_CPP_FLAGS ?= -O0
 #  NetCDF and so on.
 #--------------------------------------------------------------------------
 
-        FORT ?= ifort
+        FORT ?= 
 
 #--------------------------------------------------------------------------
 #  Set directory for executable.
@@ -214,12 +210,10 @@ ifdef ROMS_APPLICATION
  ROMS_CPPFLAGS := -D$(ROMS_APPLICATION)
  ROMS_CPPFLAGS += -D'HEADER="$(HEADER)"'
  ifdef MY_HEADER_DIR
-#   ROMS_CPPFLAGS += -D'ROMS_HEADER="$(MY_HEADER_DIR)/$(HEADER)"'
-  ROMS_CPPFLAGS += -I$(MY_HEADER_DIR)
- endif
-# else
+  ROMS_CPPFLAGS += -D'ROMS_HEADER="$(MY_HEADER_DIR)/$(HEADER)"'
+ else
   ROMS_CPPFLAGS += -D'ROMS_HEADER="$(HEADER)"'
-# endif
+ endif
  ifdef MY_CPP_FLAGS
   ROMS_CPPFLAGS += $(MY_CPP_FLAGS)
  endif
@@ -266,11 +260,6 @@ source-dir-to-binary-dir = $(addprefix $(SCRATCH_DIR)/, $(notdir $1))
 source-to-object = $(call source-dir-to-binary-dir,   \
                    $(subst .F,.o,$1))
 
-# $(call source-to-object, source-file-list)
-c-source-to-object = $(call source-dir-to-binary-dir,       \
-                     $(subst .c,.o,$(filter %.c,$1))        \
-                     $(subst .cc,.o,$(filter %.cc,$1)))
-
 # $(call make-library, library-name, source-file-list)
 define make-library
    libraries += $(SCRATCH_DIR)/$1
@@ -278,18 +267,6 @@ define make-library
 
    $(SCRATCH_DIR)/$1: $(call source-dir-to-binary-dir,    \
                       $(subst .F,.o,$2))
-	$(AR) $(ARFLAGS) $$@ $$^
-	$(RANLIB) $$@
-endef
-
-# $(call make-c-library, library-name, source-file-list)
-define make-c-library
-   libraries += $(SCRATCH_DIR)/$1
-   c_sources += $2
-
-   $(SCRATCH_DIR)/$1: $(call source-dir-to-binary-dir,    \
-                      $(subst .c,.o,$(filter %.c,$2))     \
-                      $(subst .cc,.o,$(filter %.cc,$2)))
 	$(AR) $(ARFLAGS) $$@ $$^
 	$(RANLIB) $$@
 endef
@@ -306,12 +283,6 @@ define compile-rules
 endef
 
 # $(c-compile-rules)
-define c-compile-rules
-  $(foreach f, $(local_c_src),       \
-    $(call one-c-compile-rule,$(call c-source-to-object,$f), $f))
-endef
-
-# $(call one-compile-rule, binary-file, f90-file, source-file)
 define one-compile-rule
   $1: $2 $3
 	cd $$(SCRATCH_DIR); $$(FC) -c $$(FFLAGS) $(notdir $2)
@@ -319,13 +290,6 @@ define one-compile-rule
   $2: $3
 	$$(CPP) $$(CPPFLAGS) $$(MY_CPP_FLAGS) $$< > $$@
 	$$(CLEAN) $$@
-
-endef
-
-# $(call one-c-compile-rule, binary-file, source-file)
-define one-c-compile-rule
-  $1: $2
-	cd $$(SCRATCH_DIR); $$(CXX) -c $$(CXXFLAGS) $$<
 
 endef
 
@@ -397,6 +361,7 @@ CPPFLAGS += -D$(shell echo ${FORT} | tr "-" "_" | tr [a-z] [A-Z])
 CPPFLAGS += -D'ROOT_DIR="$(ROOTDIR)"'
 ifdef ROMS_APPLICATION
   CPPFLAGS  += $(ROMS_CPPFLAGS)
+  CPPFLAGS  += -DNestedGrids=$(NestedGrids)
   MDEPFLAGS += -DROMS_HEADER="$(HEADER)"
 endif
 
@@ -439,6 +404,9 @@ ifdef USE_REPRESENTER
  modules  +=	ROMS/Representer \
 		ROMS/Representer/Biology
 endif
+ifdef USE_SEAICE
+ modules  +=	ROMS/SeaIce
+endif
 ifdef USE_TANGENT
  modules  +=	ROMS/Tangent \
 		ROMS/Tangent/Biology
@@ -446,10 +414,8 @@ endif
  modules  +=	ROMS/Nonlinear \
 		ROMS/Nonlinear/Biology \
 		ROMS/Nonlinear/Sediment \
-		ROMS/Functionals
-ifdef USE_SEAICE
- modules  +=	ROMS/SeaIce
-endif
+		ROMS/Functionals \
+		ROMS/Utility \
 ifdef USE_CICE
  modules  +=	SeaIce/Extra
     LIBS  +=    $(SCRATCH_DIR)/libCICE.a
@@ -528,15 +494,6 @@ $(SCRATCH_DIR):
 # FFLAGS += -Mprof=mpi,lines              # pgi
 # FFLAGS += -Mprof=mpi,hwcts              # pgi
 # FFLAGS += -Mprof=func                   # pgi
-  FFLAGS += -mcmodel=medium -shared-intel
-
-ifdef USE_BRIDGE
-  FFLAGS += -xAVX
-endif
-
-ifdef USE_WELL
-  FFLAGS += -xCORE-xAVX2
-endif
 
 #--------------------------------------------------------------------------
 #  Special CPP macros for mod_strings.F

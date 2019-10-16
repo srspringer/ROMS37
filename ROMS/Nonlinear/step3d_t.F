@@ -452,6 +452,26 @@
 #  endif
 # endif
 
+# ifdef TS_MPDATA
+#  define I_RANGE Istrm2,Iendp2
+#  define J_RANGE Jstrm2,Jendp2
+! Add offset to temperatures to make them positive definite
+!      IF (DOMAIN(ng)%SouthWest_Test(tile)) THEN
+!            write(0,*) t(100,100,12,3,itemp),t(100,100,12,nnew,itemp),  &
+!     &        Hz(100,100,12)
+!     END IF 
+      DO k=1,N(ng)
+        DO j=J_RANGE
+          DO i=I_RANGE
+            t(i,j,k,nnew,itemp)=t(i,j,k,nnew,itemp)+5*Hz(i,j,k)
+            t(i,j,k,3,itemp)=t(i,j,k,3,itemp)+5
+          END DO
+        END DO
+      END DO
+# endif
+# undef I_RANGE
+# undef J_RANGE
+
 #ifdef OFFLINE_BIOLOGY
       T_LOOP : DO ibt=1,NBT
         itrc=idbio(ibt)
@@ -1179,6 +1199,23 @@
           END DO
         END DO
       END DO
+
+#  define I_RANGE Istrm2,Iendp2
+#  define J_RANGE Jstrm2,Jendp2
+! Add offset to temperatures to make them positive definite
+      DO k=1,N(ng)
+        DO j=J_RANGE
+          DO i=I_RANGE
+            t(i,j,k,nnew,itemp)=t(i,j,k,nnew,itemp)-5*Hz(i,j,k);
+            t(i,j,k,3,itemp)=t(i,j,k,3,itemp)-5;
+          END DO
+        END DO
+      END DO
+!      IF (DOMAIN(ng)%SouthWest_Test(tile)) THEN
+!            write(0,*) t(100,100,12,3,itemp),t(100,100,12,nnew,itemp)   
+!      END IF 
+# undef I_RANGE
+# undef J_RANGE
 !
 !  Start pipelined J-loop.
 !

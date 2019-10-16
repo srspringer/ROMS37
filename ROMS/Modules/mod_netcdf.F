@@ -6383,7 +6383,7 @@
 !
       my_cmode=IOR(CMODE, nf90_mpiio)
       my_cmode=IOR(my_cmode, nf90_clobber)
-      status=nf90_create(path = TRIM(ncname),                           &
+      status=nf90_create_par(path = TRIM(ncname),                           &
      &                   cmode = my_cmode,                              &
      &                   ncid = ncid,                                   &
      &                   comm = OCN_COMM_WORLD,                         &
